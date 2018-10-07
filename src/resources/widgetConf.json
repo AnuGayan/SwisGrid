@@ -1,0 +1,23 @@
+{
+    "name": "Aggregate Table",
+    "id": "SGAggregate",
+    "thumbnailURL": "",
+    "configs": {
+        "userPrefs": true,
+        "pubsub": {
+            "types": ["subscriber"]
+        },
+        "providerConfig": {
+            "configs": {
+                "type": "SiddhiStoreDataProvider",
+                "config": {
+                    "siddhiApp": "@App:name('S_GRID') define stream sgServicesStream(activity_id string, service string, number_of_success_service int, number_of_failed_service int, message_id string, status string, flow_status int, nb_events int, nb_events_total int, starttime long, endtime long, duration long, file_size long, from_sys string, to_sys string, faultdescr string); @store(type='rdbms' , datasource='S_GRID') @purge(enable='false') define aggregation test from sgServicesStream select service, sum(number_of_success_service) as number_of_success_service, sum(number_of_failed_service) as number_of_failed_service, min(file_size) as min_file_size,  max(file_size) as max_file_size, avg(file_size) as avg_file_size, min(duration) as min_duration, max(duration) as max_duration , avg(duration) as avg_duration group by service aggregate every sec...year; ",
+                    "queryData": {
+                        "query": " from test within {{from}}L , {{to}}L per '{{per}}s' select service, number_of_success_service, number_of_failed_service, min_file_size, max_file_size, avg_file_size, min_duration, max_duration, avg_duration"
+                    },
+                    "publishingInterval": 60
+                }
+            }
+        }
+    }
+}
